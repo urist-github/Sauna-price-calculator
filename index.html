@@ -1,149 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Sauna Price Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
+      background: #f9f9f9;
       text-align: center;
+    }
+    h2 {
+      font-size: 24px;
+    }
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      justify-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
     }
     .option {
-      display: inline-block;
-      width: 140px;
-      margin: 10px;
-      border: 2px solid transparent;
+      border: 2px solid #ccc;
+      border-radius: 10px;
       padding: 10px;
-      text-align: center;
-      border-radius: 8px;
       cursor: pointer;
-      vertical-align: top;
+      transition: transform 0.2s, border-color 0.2s;
+      background: #fff;
+      width: 200px;
     }
     .option.selected {
-      border-color: green;
-      background-color: #eafbe9;
+      border-color: #00b894;
+      transform: scale(1.05);
     }
     .option img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin-bottom: 5px;
-      border-radius: 6px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
     }
     .option span {
       display: block;
+      margin-top: 8px;
       font-size: 14px;
+    }
+    #total {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
   <h2>Sauna Price Calculator</h2>
-  <p><strong>Base price: €2000</strong></p>
+  <p><strong>Base price: €1750</strong></p>
 
-  <div id="options"></div>
+  <div id="options-container" class="option-grid"></div>
 
-  <h3>Total price: €<span id="total">2000</span></h3>
+  <div id="total">Total price: €1750</div>
 
   <script>
-    const basePrice = 2000;
+    const basePrice = 1750;
+    let selectedOptions = new Set();
+
     const options = [
+      {
+        id: "heater",
+        name: "Sauna heater",
+        price: 550,
+        image: "https://content2.rozetka.com.ua/goods/images/big/369510033.jpg",
+      },
       {
         id: "alder",
         name: "Therm alder wood interior",
-        price: 100,
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ08Udza-XOajJi3pOX1y95pMklhq2Y92k6qw&s"
+        price: 300,
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ08Udza-XOajJi3pOX1y95pMklhq2Y92k6qw&s",
       },
       {
         id: "floorboards",
         name: "Floorboards instead of plank",
         price: 50,
-        image: "https://vendor-stroy.com.ua/files/polovaya.1.jpg"
+        image: "https://vendor-stroy.com.ua/files/polovaya.1.jpg",
       },
       {
         id: "coating",
         name: "Floor coating",
         price: 30,
-        image: "https://klfz.com.ua/Media/shop-13883/KLF%20zavod/Statti/kraska-dlya-derevyanogo-pola.jpg"
+        image: "https://klfz.com.ua/Media/shop-13883/KLF%20zavod/Statti/kraska-dlya-derevyanogo-pola.jpg",
       },
       {
         id: "shingles",
         name: "Shingle mosaic",
         price: 200,
-        image: "https://centrpol.com.ua/image/cache/catalog/tovari/mozaika/3d/Polsha/quadromini_3-500x400.jpg"
+        image: "https://centrpol.com.ua/image/cache/catalog/tovari/mozaika/3d/Polsha/quadromini_3-500x400.jpg",
       },
       {
         id: "window",
         name: "Panoramic window",
-        price: 300,
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxGFM1TU8ItBtzLCjefrnPTiT_HBkHD7HSPA&s"
+        price: 200,
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxGFM1TU8ItBtzLCjefrnPTiT_HBkHD7HSPA&s",
       },
       {
         id: "juniper",
-        name: "Juniper panel",
-        price: 150,
-        image: "https://www.satu.kz/pictures/product/big/150106933_w640_h640_panel-yalovaya-dlya.jpg"
+        name: "Juniper panel 100x50cm",
+        price: 100,
+        image: "https://images.prom.ua/4305765029_w200_h200_spily-mozhzhevelnika-dlya.jpg",
       },
       {
         id: "quartzite",
         name: "Raspberry quartzite stones",
-        price: 80,
-        image: "https://img01.flagma.ua/photo/kamen-dlya-bani-13593728_small.jpg"
-      },
-      {
-        id: "heater",
-        name: "Sauna heater",
-        price: 500,
-        image: "https://www.huumeurope.com/media/catalog/product/cache/2/image/800x/602f0fa2c1f0d1ba5e241f914e856ff9/h/u/huum-drop_1.png"
+        price: 70,
+        image: "https://www.teplodar.in.ua/content/images/19/400x400l50nn0/18921397365697.jpeg",
       },
       {
         id: "ventilation",
         name: "Ventilation system",
-        price: 120,
-        image: "https://sauneco.com.ua/image/cache/catalog/sauna/ventilation/vent3-600x600.jpg"
+        price: 60,
+        image: "https://images.prom.ua/5105156816_w0_h430_zadvizhka-dlya-sauny.jpg",
       },
       {
         id: "oil",
         name: "Sauna oil coating for wood",
         price: 90,
-        image: "https://stp-ua.com/wp-content/uploads/2021/05/tikkurila-supisauna.jpg"
-      }
+        image: "https://baltresto.com/wp-content/uploads/2020/09/photo-4-colorless-oil-for-sauna-benches%E2%80%93supi-laudesuoja.jpg",
+      },
     ];
 
-    const optionsContainer = document.getElementById("options");
+    function renderOptions() {
+      const container = document.getElementById("options-container");
 
-    options.forEach(opt => {
-      const div = document.createElement("div");
-      div.className = "option";
-      div.onclick = () => toggleOption(opt.id, opt.price);
-      div.id = opt.id;
-      div.innerHTML = `<img src="${opt.image}" alt="${opt.name}" /><span>${opt.name}<br>(+€${opt.price})</span>`;
-      optionsContainer.appendChild(div);
-    });
-
-    const selectedOptions = new Set();
-
-    function toggleOption(id, price) {
-      const elem = document.getElementById(id);
-      if (selectedOptions.has(id)) {
-        selectedOptions.delete(id);
-        elem.classList.remove("selected");
-      } else {
-        selectedOptions.add(id);
-        elem.classList.add("selected");
-      }
-      updatePrice();
-    }
-
-    function updatePrice() {
-      let total = basePrice;
-      selectedOptions.forEach(id => {
-        const opt = options.find(o => o.id === id);
-        if (opt) total += opt.price;
+      options.forEach((opt, index) => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.innerHTML = `
+          <img src="${opt.image}" alt="${opt.name}">
+          <span>${opt.name}<br>(+€${opt.price})</span>
+        `;
+        div.addEventListener("click", () => {
+          if (selectedOptions.has(index)) {
+            selectedOptions.delete(index);
+            div.classList.remove("selected");
+          } else {
+            selectedOptions.add(index);
+            div.classList.add("selected");
+          }
+          updateTotal();
+        });
+        container.appendChild(div);
       });
-      document.getElementById("total").textContent = total;
     }
+
+    function updateTotal() {
+      let total = basePrice;
+      selectedOptions.forEach(index => {
+        total += options[index].price;
+      });
+      document.getElementById("total").textContent = `Total price: €${total}`;
+    }
+
+    renderOptions();
+    updateTotal();
   </script>
 </body>
 </html>
